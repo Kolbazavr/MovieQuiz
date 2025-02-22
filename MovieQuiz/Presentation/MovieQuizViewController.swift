@@ -149,50 +149,17 @@ final class MovieQuizViewController: UIViewController {
         correctAnswers = 0
     }
     
-    private func evaluateAnswer(isCorrect: Bool) {
+    private func evaluateAnswer(buttonTypePressed: Bool) {
         let currentQuestion = questions[currentQuestionIndex]
-        showAnswerResult(isCorrect: isCorrect == currentQuestion.correctAnswer)
+        showAnswerResult(isCorrect: buttonTypePressed == currentQuestion.correctAnswer)
     }
     
-    @IBAction private func noButtonClicked(_ sender: Any) {
-        evaluateAnswer(isCorrect: false)
+    @IBAction private func noButtonPressed(_ sender: Any) {
+        evaluateAnswer(buttonTypePressed: false)
     }
     
-    @IBAction private func yesButtonClicked(_ sender: Any) {
-        evaluateAnswer(isCorrect: true)
+    @IBAction private func yesButtonPressed(_ sender: Any) {
+        evaluateAnswer(buttonTypePressed: true)
     }
      
-}
-
-
-//MARK: - Models
-
-struct QuizQuestion {
-    let image: String
-    let text: String
-    let correctAnswer: Bool
-}
-
-struct QuizStepViewModel {
-    let image: UIImage
-    let question: String
-    let questionNumber: String
-    
-    init(imageName: String, question: String, questionNumber: String) {
-        self.image = UIImage(named: imageName)!
-        self.question = question
-        self.questionNumber = questionNumber
-    }
-    
-    init(quizQuestion: QuizQuestion, number currentQuestionIndex: Int, of questionsCount: Int) {
-        self.image = UIImage(named: quizQuestion.image)!
-        self.question = quizQuestion.text
-        self.questionNumber = "\(currentQuestionIndex + 1)/\(questionsCount)"
-    }
-}
-
-struct QuizResultsViewModel {
-    let title: String
-    let text: String
-    let buttonText: String
 }
