@@ -52,7 +52,7 @@ final class MovieQuizViewController: UIViewController {
                 correctAnswer: false)
         ]
     
-    private enum highlightState {
+    private enum HighlightState {
         case correct
         case incorrect
         case noAnswer
@@ -80,6 +80,7 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        imageView.layer.cornerRadius = 20
         loadQuestion()
     }
     
@@ -89,7 +90,7 @@ final class MovieQuizViewController: UIViewController {
         counterLabel.text = viewModel.questionNumber
     }
     
-    private func updateBorder(for state: highlightState) {
+    private func updateBorder(for state: HighlightState) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderColor = state.color
         imageView.layer.borderWidth = state.borderWidth
