@@ -52,108 +52,147 @@ final class MovieQuizViewController: UIViewController {
                 correctAnswer: false)
         ]
     
+    private enum highlightState {
+        case correct
+        case incorrect
+        case noAnswer
+        
+        var color: CGColor {
+            switch self {
+            case .correct:
+                return UIColor.ypGreen.cgColor
+            case .incorrect:
+                return UIColor.ypRed.cgColor
+            case .noAnswer:
+                return UIColor.clear.cgColor
+            }
+        }
+        
+        var borderWidth: CGFloat {
+            switch self {
+            case .correct, .incorrect:
+                return 8
+            case .noAnswer:
+                return 0
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let currentQuestion = questions[currentQuestionIndex]
-        show(quiz: convert(model: currentQuestion))
+        loadQuestion()
     }
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)"
-        )
+    private func updateUI(with viewModel: QuizStepViewModel) {
+        imageView.image = viewModel.image
+        textLabel.text = viewModel.question
+        counterLabel.text = viewModel.questionNumber
     }
     
-    private func show(quiz step: QuizStepViewModel) {
-        imageView.image = step.image
-        textLabel.text = step.question
-        counterLabel.text = step.questionNumber
+    private func updateBorder(for state: highlightState) {
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderColor = state.color
+        imageView.layer.borderWidth = state.borderWidth
     }
     
     private func showAnswerResult(isCorrect: Bool) {
         correctAnswers += isCorrect ? 1 : 0
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        updateBorder(for: isCorrect ? .correct : .incorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.showNextQuestionOrResults()
-            }
+            self.showNextQuestionOrResults()
+        }
     }
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questions.count - 1 {
-            let text = "Ваш результат: \(correctAnswers)/10"
-            let viewModel = QuizResultsViewModel(
-                title: "Этот раунд окончен!",
-                text: text,
-                buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel)
+            showResults()
         } else {
             currentQuestionIndex += 1
-            let currentQuestion = questions[currentQuestionIndex]
-            show(quiz: convert(model: currentQuestion))
+            loadQuestion()
         }
     }
     
-    private func show(quiz result: QuizResultsViewModel) {
+    private func loadQuestion() {
+        let currentQuestion = questions[currentQuestionIndex]
+        let viewModel = QuizStepViewModel(quizQuestion: currentQuestion, number: currentQuestionIndex, of: questions.count)
+        updateUI(with: viewModel)
+        updateBorder(for: .noAnswer)
+    }
+    
+    private func showResults() {
+        let text = "Ваш результат: \(correctAnswers)/\(questions.count)"
+        let resultsViewModel = QuizResultsViewModel(
+            title: "Этот раунд окончен!",
+            text: text,
+            buttonText: "Сыграть ещё раз")
+        showAlert(resultsViewModel)
+    }
+    
+    private func showAlert(_ result: QuizResultsViewModel) {
         let alert = UIAlertController(
             title: result.title,
             message: result.text,
             preferredStyle: .alert)
         
         let action = UIAlertAction(title: result.buttonText, style: .default) { _ in
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            
-            let firstQuestion = self.questions[self.currentQuestionIndex]
-            let viewModel = self.convert(model: firstQuestion)
-            self.show(quiz: viewModel)
+            self.resetQuiz()
+            self.loadQuestion()
         }
         
         alert.addAction(action)
-        
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true)
+    }
+    
+    private func resetQuiz() {
+        currentQuestionIndex = 0
+        correctAnswers = 0
+    }
+    
+    private func evaluateAnswer(isCorrect: Bool) {
+        let currentQuestion = questions[currentQuestionIndex]
+        showAnswerResult(isCorrect: isCorrect == currentQuestion.correctAnswer)
     }
     
     @IBAction private func noButtonClicked(_ sender: Any) {
-        let currentQuestion = questions[currentQuestionIndex]
-        let givenAnswer = false
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        evaluateAnswer(isCorrect: false)
     }
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
-        let currentQuestion = questions[currentQuestionIndex]
-        let givenAnswer = true
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        evaluateAnswer(isCorrect: true)
     }
-    
-    
-    
+     
 }
 
 
 //MARK: - Models
 
 struct QuizQuestion {
-  let image: String
-  let text: String
-  let correctAnswer: Bool
+    let image: String
+    let text: String
+    let correctAnswer: Bool
 }
 
 struct QuizStepViewModel {
-  let image: UIImage
-  let question: String
-  let questionNumber: String
+    let image: UIImage
+    let question: String
+    let questionNumber: String
+    
+    init(imageName: String, question: String, questionNumber: String) {
+        self.image = UIImage(named: imageName)!
+        self.question = question
+        self.questionNumber = questionNumber
+    }
+    
+    init(quizQuestion: QuizQuestion, number currentQuestionIndex: Int, of questionsCount: Int) {
+        self.image = UIImage(named: quizQuestion.image)!
+        self.question = quizQuestion.text
+        self.questionNumber = "\(currentQuestionIndex + 1)/\(questionsCount)"
+    }
 }
 
 struct QuizResultsViewModel {
-  let title: String
-  let text: String
-  let buttonText: String
+    let title: String
+    let text: String
+    let buttonText: String
 }
