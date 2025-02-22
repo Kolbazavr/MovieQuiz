@@ -67,20 +67,14 @@ final class MovieQuizViewController: UIViewController {
                 return UIColor.clear.cgColor
             }
         }
-        
-        var borderWidth: CGFloat {
-            switch self {
-            case .correct, .incorrect:
-                return 8
-            case .noAnswer:
-                return 0
-            }
-        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.layer.cornerRadius = 20
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        
         loadQuestion()
     }
     
@@ -91,9 +85,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func updateBorder(for state: HighlightState) {
-        imageView.layer.masksToBounds = true
         imageView.layer.borderColor = state.color
-        imageView.layer.borderWidth = state.borderWidth
     }
     
     private func showAnswerResult(isCorrect: Bool) {
