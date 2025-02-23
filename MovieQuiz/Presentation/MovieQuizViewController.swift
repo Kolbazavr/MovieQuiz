@@ -5,6 +5,8 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
+    @IBOutlet private weak var noButton: UIButton!
+    @IBOutlet private weak var yesButton: UIButton!
     
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
@@ -52,19 +54,22 @@ final class MovieQuizViewController: UIViewController {
                 correctAnswer: false)
         ]
     
-    private enum HighlightState {
+    private enum QuestionState {
         case correct
         case incorrect
         case noAnswer
         
         var color: CGColor {
-            switch self {
-            case .correct:
-                return UIColor.ypGreen.cgColor
-            case .incorrect:
-                return UIColor.ypRed.cgColor
-            case .noAnswer:
-                return UIColor.clear.cgColor
+            return switch self {
+            case .correct: UIColor.ypGreen.cgColor
+            case .incorrect: UIColor.ypRed.cgColor
+            case .noAnswer: UIColor.clear.cgColor
+            }
+        }
+        var buttonsActive: Bool {
+            return switch self {
+            case .correct, .incorrect: false
+            case .noAnswer: true
             }
         }
     }
@@ -84,13 +89,15 @@ final class MovieQuizViewController: UIViewController {
         counterLabel.text = viewModel.questionNumber
     }
     
-    private func updateBorder(for state: HighlightState) {
+    private func updateQuestionState(for state: QuestionState) {
         imageView.layer.borderColor = state.color
+        noButton.isEnabled = state.buttonsActive
+        yesButton.isEnabled = state.buttonsActive
     }
     
     private func showAnswerResult(isCorrect: Bool) {
         correctAnswers += isCorrect ? 1 : 0
-        updateBorder(for: isCorrect ? .correct : .incorrect)
+        updateQuestionState(for: isCorrect ? .correct : .incorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.showNextQuestionOrResults()
@@ -110,7 +117,7 @@ final class MovieQuizViewController: UIViewController {
         let currentQuestion = questions[currentQuestionIndex]
         let viewModel = QuizStepViewModel(quizQuestion: currentQuestion, number: currentQuestionIndex, of: questions.count)
         updateUI(with: viewModel)
-        updateBorder(for: .noAnswer)
+        updateQuestionState(for: .noAnswer)
     }
     
     private func showResults() {
