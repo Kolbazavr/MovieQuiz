@@ -12,11 +12,11 @@ struct QuizStepViewModel {
     let question: String
     let questionNumber: String
     
-    init(imageName: String, question: String, questionNumber: String) {
-        self.image = UIImage(named: imageName)!
-        self.question = question
-        self.questionNumber = questionNumber
-    }
+//    init(imageName: String, question: String, questionNumber: String) {
+//        self.image = UIImage(named: imageName)!
+//        self.question = question
+//        self.questionNumber = questionNumber
+//    }
     
     init(quizQuestion: QuizQuestion, number currentQuestionIndex: Int, of questionsCount: Int) {
         self.image = UIImage(named: quizQuestion.image)!
