@@ -8,14 +8,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var yesButton: UIButton!
     
+    private var questionFactory: QuestionFactoryProtocol?
+    private var alertPresenter: AlertPresenterProtocol?
+    private var statisticService: StatisticServiceProtocol?
+    
     private var currentQuestionNumber = 0
     private var correctAnswers = 0
-    
-    private let questionsAmount: Int = 10
-    private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
-    
-    private var alertPresenter: AlertPresenterProtocol?
+    private let questionsAmount: Int = 10
     
     private enum QuestionState {
         case correct
@@ -45,6 +45,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         self.questionFactory = QuestionFactory(delegate: self)
         self.alertPresenter = AlertPresenter(delegate: self)
+        statisticService = StatisticService()
         
         loadQuestion()
     }
@@ -103,11 +104,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     private func showResults() {
-        let text = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
+        statisticService?.store(result: GameResult(correct: correctAnswers, total: questionsAmount, date: Date()))
         let resultsModel = AlertModel(
-            title: "Этот раунд окончен!",
-            message: text,
-            buttonText: "Сыграть ещё раз") { [weak self] in
+            correctAnswers: correctAnswers,
+            questionsAmount: questionsAmount,
+            gamesCount: statisticService?.gamesCount,
+            record: statisticService?.bestGame.description,
+            accuracy: statisticService?.totalAccuracy) { [weak self] in
                 self?.resetQuiz()
                 self?.loadQuestion()
             }

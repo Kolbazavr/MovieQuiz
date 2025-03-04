@@ -8,8 +8,41 @@
 import Foundation
 
 struct AlertModel {
-    let title: String
-    let message: String
-    let buttonText: String
+    let title: String = "Этот раунд окончен!"
+    let buttonText: String = "Сыграть ещё раз"
+    private let correctAnswers: Int
+    private let questionsAmount: Int
+    private let gamesCount: Int?
+    private let record: String?
+    private let accuracy: Double?
     let completion: () -> Void
+    
+    init(correctAnswers: Int, questionsAmount: Int, gamesCount: Int?, record: String?, accuracy: Double?, completion: @escaping () -> Void) {
+        self.correctAnswers = correctAnswers
+        self.questionsAmount = questionsAmount
+        self.gamesCount = gamesCount
+        self.record = record
+        self.accuracy = accuracy
+        self.completion = completion
+    }
+    
+    private var yourScore: String {
+        "Ваш результат: \(correctAnswers)/\(questionsAmount)"
+    }
+    
+    private var totalGamesPlayed: String {
+        "Количество сыгранных квизов: \(gamesCount ?? 0)"
+    }
+    
+    private var bestScore: String {
+        "Рекорд: \(record ?? "пока нет такого")"
+    }
+    
+    private var totalAccuracy: String {
+        String(format: "%.2f", accuracy ?? 0) + "%"
+    }
+    
+    var message: String {
+        return "\(yourScore)\n\(totalGamesPlayed)\n\(bestScore)\n\(totalAccuracy)"
+    }
 }
