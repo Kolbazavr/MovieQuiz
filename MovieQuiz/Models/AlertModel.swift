@@ -8,8 +8,8 @@
 import Foundation
 
 struct AlertModel {
-    let title: String = "Этот раунд окончен!"
-    let buttonText: String = "Сыграть ещё раз"
+    let title: String
+    let buttonText: String
     private let correctAnswers: Int
     private let questionsAmount: Int
     private let gamesCount: Int?
@@ -17,7 +17,9 @@ struct AlertModel {
     private let accuracy: Double?
     let completion: () -> Void
     
-    init(correctAnswers: Int, questionsAmount: Int, gamesCount: Int?, record: String?, accuracy: Double?, completion: @escaping () -> Void) {
+    init(title: String = "Этот раунд окончен!", buttonText: String = "Сыграть ещё раз", correctAnswers: Int, questionsAmount: Int, gamesCount: Int?, record: String?, accuracy: Double?, completion: @escaping () -> Void) {
+        self.title = title
+        self.buttonText = buttonText
         self.correctAnswers = correctAnswers
         self.questionsAmount = questionsAmount
         self.gamesCount = gamesCount
