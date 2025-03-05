@@ -10,8 +10,6 @@ import Foundation
 final class StatisticService {
     
     private let storage = UserDefaults.standard
-    private let decoder = JSONDecoder()
-    private let encoder = JSONEncoder()
     
     private enum Keys: String {
         case bestGame
@@ -32,26 +30,8 @@ extension StatisticService: StatisticServiceProtocol {
     }
     
     var bestGame: GameResult {
-        get {
-            guard let data = storage.data(forKey: Keys.bestGame.rawValue) else {
-                return GameResult(correct: 0, total: 0, date: Date())
-            }
-            do {
-                let decodedResult = try decoder.decode(GameResult.self, from: data)
-                return decodedResult
-            } catch {
-                print("Decoding failed: \(error.localizedDescription)")
-                return GameResult(correct: 0, total: 0, date: Date())
-            }
-        }
-        set {
-            do {
-                let encodedData = try encoder.encode(newValue)
-                storage.set(encodedData, forKey: Keys.bestGame.rawValue)
-            } catch {
-                print("Encoding failed: \(error.localizedDescription)")
-            }
-        }
+        get { storage.getThingy(forKey: Keys.bestGame.rawValue, as: GameResult.self) ?? GameResult() }
+        set { storage.setThingy(newValue, forKey: Keys.bestGame.rawValue) }
     }
     
     var totalAccuracy: Double {
@@ -62,6 +42,10 @@ extension StatisticService: StatisticServiceProtocol {
     func store(result: GameResult) {
         gamesCount += 1
         correctCount += result.correct
-        bestGame = max(bestGame, result)
+        bestGame = max(result, bestGame)
+    }
+    
+    func eraseAll() {
+        storage.removeAll()
     }
 }

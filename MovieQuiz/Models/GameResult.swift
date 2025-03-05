@@ -12,6 +12,12 @@ struct GameResult: Codable, Comparable {
     let total: Int
     let date: Date
     
+    init(correct: Int = 0, total: Int = 0, date: Date = Date()) {
+        self.correct = correct
+        self.total = total
+        self.date = date
+    }
+    
     var description: String {
         "\(correct)/\(total) (\(date.dateTimeString))"
     }

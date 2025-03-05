@@ -9,11 +9,11 @@ import UIKit
 
 final class AlertPresenter: AlertPresenterProtocol {
     
+    private weak var delegate: AlertPresenterDelegate?
+    
     init(delegate: AlertPresenterDelegate?) {
         self.delegate = delegate
     }
-    
-    private weak var delegate: AlertPresenterDelegate?
     
     func makeAlert(for model: AlertModel) {
         let alert = UIAlertController(

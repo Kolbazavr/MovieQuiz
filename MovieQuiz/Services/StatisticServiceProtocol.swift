@@ -13,4 +13,5 @@ protocol StatisticServiceProtocol {
     var totalAccuracy: Double { get }
     
     func store(result: GameResult)
+    func eraseAll()
 }

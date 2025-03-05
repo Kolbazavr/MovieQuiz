@@ -27,10 +27,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             case .noAnswer: UIColor.clear.cgColor
             }
         }
-        var buttonsActive: Bool {
+        var buttonsActive: (Bool, Bool) {
             return switch self {
-            case .correct, .incorrect: false
-            case .noAnswer: true
+            case .correct, .incorrect: (false, false)
+            case .noAnswer: (true, true)
             }
         }
     }
@@ -74,8 +74,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     private func updateQuestionState(for state: QuestionState) {
         imageView.layer.borderColor = state.color
-        noButton.isEnabled = state.buttonsActive
-        yesButton.isEnabled = state.buttonsActive
+        (noButton.isEnabled, yesButton.isEnabled) = state.buttonsActive
     }
     
     private func showAnswerResult(isCorrect: Bool) {
@@ -89,11 +88,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionNumber == questionsAmount {
-            showResults()
-        } else {
-            loadQuestion()
-        }
+        currentQuestionNumber == questionsAmount ? showResults() : loadQuestion()
     }
     
     private func loadQuestion() {
@@ -131,5 +126,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     @IBAction private func yesButtonPressed(_ sender: Any) {
         evaluateAnswer(buttonTypePressed: true)
     }
-     
+
+    //Hidden Feature! (5 seconds)
+    @IBAction func LongPress(_ sender: UILongPressGestureRecognizer) {
+        statisticService?.eraseAll()
+        print("UserDefaults erased")
+    }
 }
