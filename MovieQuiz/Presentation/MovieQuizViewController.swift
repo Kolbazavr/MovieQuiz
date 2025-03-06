@@ -72,13 +72,13 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showResults() {
-        statisticService?.store(result: GameResult(correct: correctAnswers, total: questionsAmount, date: Date()))
+        statisticService?.store(correctAnswers: correctAnswers)
         
         let title = "Этот раунд окончен!"
         let buttonText = "Сыграть ещё раз"
         let yourScore = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
         let totalGamesPlayed = "Количество сыгранных квизов: \(statisticService?.gamesCount ?? 0)"
-        let bestScore = "Рекорд: \(statisticService?.bestGame.description ?? "пока нет такого")"
+        let bestScore = "Рекорд: \(statisticService?.bestScore ?? 0)/\(questionsAmount) (\(statisticService?.bestScoreDate ?? ""))"
         let totalAccuracy = "Средняя точность: " + String(format: "%.2f", statisticService?.totalAccuracy ?? 0) + "%"
         let message = "\(yourScore)\n\(totalGamesPlayed)\n\(bestScore)\n\(totalAccuracy)"
            
@@ -116,7 +116,7 @@ final class MovieQuizViewController: UIViewController {
     }
 
     //Hidden Feature! (5 seconds)
-    @IBAction func longPress(_ sender: UILongPressGestureRecognizer) {
+    @IBAction private func longPress(_ sender: UILongPressGestureRecognizer) {
         statisticService?.eraseAll()
         print("UserDefaults erased")
     }

@@ -12,15 +12,15 @@ final class StatisticService {
     private let storage = UserDefaults.standard
     
     private enum Keys: String {
-        case bestGameCorrect
-        case bestGameTotal
-        case bestGameDate
+        case bestScore
+        case bestScoreDate
         case gamesCount
         case correctCount
     }
 }
 
 extension StatisticService: StatisticServiceProtocol {
+    
     var gamesCount: Int{
         get { storage.integer(forKey: Keys.gamesCount.rawValue) }
         set { storage.set(newValue, forKey: Keys.gamesCount.rawValue) }
@@ -31,19 +31,14 @@ extension StatisticService: StatisticServiceProtocol {
         set { storage.set(newValue, forKey: Keys.correctCount.rawValue) }
     }
     
-    var bestGame: GameResult {
-        get {
-            let total = storage.integer(forKey: Keys.bestGameTotal.rawValue)
-            let correct = storage.integer(forKey: Keys.bestGameCorrect.rawValue)
-            let date = storage.object(forKey: Keys.bestGameDate.rawValue)
-            
-            return GameResult(correct: correct, total: total, date: date as? Date ?? Date())
-        }
-        set {
-            storage.set(newValue.total, forKey: Keys.bestGameTotal.rawValue)
-            storage.set(newValue.correct, forKey: Keys.bestGameCorrect.rawValue)
-            storage.set(newValue.date, forKey: Keys.bestGameDate.rawValue)
-        }
+    var bestScore: Int {
+        get { storage.integer(forKey: Keys.bestScore.rawValue) }
+        set { storage.set(newValue, forKey: Keys.bestScore.rawValue) }
+    }
+    
+    var bestScoreDate: String {
+        get { storage.string(forKey: Keys.bestScoreDate.rawValue) ?? Date().dateTimeString }
+        set { storage.set(newValue, forKey: Keys.bestScoreDate.rawValue) }
     }
     
     var totalAccuracy: Double {
@@ -51,10 +46,12 @@ extension StatisticService: StatisticServiceProtocol {
         return (Double(correctCount) / Double(gamesCount * 10)) * 100
     }
     
-    func store(result: GameResult) {
+    func store(correctAnswers: Int) {
         gamesCount += 1
-        correctCount += result.correct
-        bestGame = max(result, bestGame)
+        correctCount += correctAnswers
+        guard correctAnswers > bestScore else { return }
+        bestScore = correctAnswers
+        bestScoreDate = Date().dateTimeString
     }
     
     func eraseAll() {

@@ -23,7 +23,6 @@
 		EC79354B2D76750D0000E362 /* AlertPresenterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC79354A2D76750D0000E362 /* AlertPresenterProtocol.swift */; };
 		EC79354D2D7675650000E362 /* AlertPresenterDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC79354C2D7675650000E362 /* AlertPresenterDelegate.swift */; };
 		EC7935692D772C750000E362 /* StatisticServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7935682D772C750000E362 /* StatisticServiceProtocol.swift */; };
-		EC79356B2D772D340000E362 /* GameResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC79356A2D772D340000E362 /* GameResult.swift */; };
 		EC79356D2D772EE80000E362 /* StatisticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC79356C2D772EE80000E362 /* StatisticService.swift */; };
 		EC79356F2D7798F30000E362 /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC79356E2D7798F30000E362 /* UserDefaults+Extensions.swift */; };
 		ECDE051C2D67933800BD423E /* YS Display-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECDE051B2D67933800BD423E /* YS Display-Bold.ttf */; };
@@ -52,7 +51,6 @@
 		EC79354A2D76750D0000E362 /* AlertPresenterProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresenterProtocol.swift; sourceTree = "<group>"; };
 		EC79354C2D7675650000E362 /* AlertPresenterDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresenterDelegate.swift; sourceTree = "<group>"; };
 		EC7935682D772C750000E362 /* StatisticServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticServiceProtocol.swift; sourceTree = "<group>"; };
-		EC79356A2D772D340000E362 /* GameResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameResult.swift; sourceTree = "<group>"; };
 		EC79356C2D772EE80000E362 /* StatisticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticService.swift; sourceTree = "<group>"; };
 		EC79356E2D7798F30000E362 /* UserDefaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Extensions.swift"; sourceTree = "<group>"; };
 		ECDE051B2D67933800BD423E /* YS Display-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Bold.ttf"; sourceTree = "<group>"; };
@@ -80,7 +78,6 @@
 				ECDE055F2D6A336700BD423E /* QuizQuestion.swift */,
 				ECDE05612D6A338E00BD423E /* QuizResultsViewModel.swift */,
 				EC7935482D7674030000E362 /* AlertModel.swift */,
-				EC79356A2D772D340000E362 /* GameResult.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -248,7 +245,6 @@
 				EC7935412D763F3F0000E362 /* QuestionFactory.swift in Sources */,
 				ECDE05622D6A338E00BD423E /* QuizResultsViewModel.swift in Sources */,
 				AD1ABAB22831907B00B3E448 /* AppDelegate.swift in Sources */,
-				EC79356B2D772D340000E362 /* GameResult.swift in Sources */,
 				AD1ABAB42831907B00B3E448 /* SceneDelegate.swift in Sources */,
 				EC7935432D7651F20000E362 /* QuestionFactoryProtocol.swift in Sources */,
 				ECDE055E2D6A332F00BD423E /* QuizStepViewModel.swift in Sources */,

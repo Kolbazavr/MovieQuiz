@@ -9,9 +9,10 @@ import Foundation
 
 protocol StatisticServiceProtocol {
     var gamesCount: Int { get }
-    var bestGame: GameResult { get }
+    var bestScore: Int { get }
+    var bestScoreDate: String { get }
     var totalAccuracy: Double { get }
     
-    func store(result: GameResult)
+    func store(correctAnswers: Int)
     func eraseAll()
 }
