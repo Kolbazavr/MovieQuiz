@@ -8,23 +8,24 @@
 import Foundation
 
 struct AlertModel {
-    let title: String
-    let buttonText: String
+    
     private let correctAnswers: Int
     private let questionsAmount: Int
     private let gamesCount: Int?
     private let record: String?
     private let accuracy: Double?
+    let title: String
+    let buttonText: String
     let completion: () -> Void
     
-    init(title: String = "Этот раунд окончен!", buttonText: String = "Сыграть ещё раз", correctAnswers: Int, questionsAmount: Int, gamesCount: Int?, record: String?, accuracy: Double?, completion: @escaping () -> Void) {
-        self.title = title
-        self.buttonText = buttonText
+    init(correctAnswers: Int, questionsAmount: Int, gamesCount: Int?, record: String?, accuracy: Double?, title: String = "Этот раунд окончен!", buttonText: String = "Сыграть ещё раз", completion: @escaping () -> Void) {
         self.correctAnswers = correctAnswers
         self.questionsAmount = questionsAmount
         self.gamesCount = gamesCount
         self.record = record
         self.accuracy = accuracy
+        self.title = title
+        self.buttonText = buttonText
         self.completion = completion
     }
     
@@ -41,7 +42,7 @@ struct AlertModel {
     }
     
     private var totalAccuracy: String {
-        String(format: "%.2f", accuracy ?? 0) + "%"
+        "Средняя точность: " + String(format: "%.2f", accuracy ?? 0) + "%"
     }
     
     var message: String {
