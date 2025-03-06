@@ -137,7 +137,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
                 <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="5" id="qPy-3U-uaE">
                     <connections>
-                        <action selector="LongPress:" destination="BYZ-38-t0r" id="Idu-51-aYj"/>
+                        <action selector="longPress:" destination="BYZ-38-t0r" id="B0f-Ry-T7e"/>
                     </connections>
                 </pongPressGestureRecognizer>
             </objects>

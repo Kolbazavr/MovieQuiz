@@ -12,7 +12,9 @@ final class StatisticService {
     private let storage = UserDefaults.standard
     
     private enum Keys: String {
-        case bestGame
+        case bestGameCorrect
+        case bestGameTotal
+        case bestGameDate
         case gamesCount
         case correctCount
     }
@@ -30,8 +32,18 @@ extension StatisticService: StatisticServiceProtocol {
     }
     
     var bestGame: GameResult {
-        get { storage.getThingy(forKey: Keys.bestGame.rawValue, as: GameResult.self) ?? GameResult() }
-        set { storage.setThingy(newValue, forKey: Keys.bestGame.rawValue) }
+        get {
+            let total = storage.integer(forKey: Keys.bestGameTotal.rawValue)
+            let correct = storage.integer(forKey: Keys.bestGameCorrect.rawValue)
+            let date = storage.object(forKey: Keys.bestGameDate.rawValue)
+            
+            return GameResult(correct: correct, total: total, date: date as? Date ?? Date())
+        }
+        set {
+            storage.set(newValue.total, forKey: Keys.bestGameTotal.rawValue)
+            storage.set(newValue.correct, forKey: Keys.bestGameCorrect.rawValue)
+            storage.set(newValue.date, forKey: Keys.bestGameDate.rawValue)
+        }
     }
     
     var totalAccuracy: Double {
@@ -49,3 +61,4 @@ extension StatisticService: StatisticServiceProtocol {
         storage.removeAll()
     }
 }
+
