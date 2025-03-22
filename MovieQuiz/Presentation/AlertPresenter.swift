@@ -21,11 +21,13 @@ final class AlertPresenter: AlertPresenterProtocol {
             message: model.message,
             preferredStyle: .alert)
         
-        let action = UIAlertAction(title: model.buttonText, style: .default) { _ in
-            model.completion()
+        for button in model.buttons {
+            let action = UIAlertAction(title: button.buttonText, style: .default) { _ in
+                button.action()
+            }
+            alert.addAction(action)
         }
         
-        alert.addAction(action)
         delegate?.showAlert(alert: alert)
     }
 }

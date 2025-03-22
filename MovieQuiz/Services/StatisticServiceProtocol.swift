@@ -1,18 +1,12 @@
-//
-//  StatisticServiceProtocol.swift
-//  MovieQuiz
-//
-//  Created by ANTON ZVERKOV on 04.03.2025.
-//
-
 import Foundation
 
 protocol StatisticServiceProtocol {
     var gamesCount: Int { get }
-    var bestScore: Int { get }
-    var bestScoreDate: String { get }
+    var bestScore: GameResult { get }
+    var highScores: [GameResult] { get }
     var totalAccuracy: Double { get }
+    var questionsAnsweredTotal: Int { get }
     
-    func store(correctAnswers: Int)
+    func store(gameResult: GameResult)
     func eraseAll()
 }
