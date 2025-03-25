@@ -24,7 +24,6 @@
 		EC3ED0782D9091EA002775FD /* NetworkClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3ED0772D9091EA002775FD /* NetworkClientProtocol.swift */; };
 		EC3ED07A2D90BA8A002775FD /* MoviesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3ED0792D90BA8A002775FD /* MoviesLoader.swift */; };
 		EC3ED07C2D90D088002775FD /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3ED07B2D90D088002775FD /* Movie.swift */; };
-		EC3ED0D22D91764A002775FD /* Float+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3ED0D12D91764A002775FD /* Float+Extensions.swift */; };
 		EC3ED0D42D918ED4002775FD /* MoviePosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3ED0D32D918ED4002775FD /* MoviePosterView.swift */; };
 		EC3ED0D62D91E6EC002775FD /* MoviesLoadingProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3ED0D52D91E6EC002775FD /* MoviesLoadingProtocol.swift */; };
 		EC47DE5B2D84A6A60085B014 /* Int+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC47DE5A2D84A6A60085B014 /* Int+Extensions.swift */; };
@@ -77,7 +76,6 @@
 		EC3ED0772D9091EA002775FD /* NetworkClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClientProtocol.swift; sourceTree = "<group>"; };
 		EC3ED0792D90BA8A002775FD /* MoviesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesLoader.swift; sourceTree = "<group>"; };
 		EC3ED07B2D90D088002775FD /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
-		EC3ED0D12D91764A002775FD /* Float+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Float+Extensions.swift"; sourceTree = "<group>"; };
 		EC3ED0D32D918ED4002775FD /* MoviePosterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviePosterView.swift; sourceTree = "<group>"; };
 		EC3ED0D52D91E6EC002775FD /* MoviesLoadingProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesLoadingProtocol.swift; sourceTree = "<group>"; };
 		EC47DE5A2D84A6A60085B014 /* Int+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+Extensions.swift"; sourceTree = "<group>"; };
@@ -214,7 +212,6 @@
 			children = (
 				AD7AFA542836189F00399704 /* Array+Extensions.swift */,
 				EC47DE5A2D84A6A60085B014 /* Int+Extensions.swift */,
-				EC3ED0D12D91764A002775FD /* Float+Extensions.swift */,
 				EC47DE5C2D84A6B00085B014 /* UIButton+Extensions.swift */,
 				AD77F5732857F8810062FB14 /* Date+Extensions.swift */,
 				EC79356E2D7798F30000E362 /* UserDefaults+Extensions.swift */,
@@ -346,7 +343,6 @@
 				EC3ED0782D9091EA002775FD /* NetworkClientProtocol.swift in Sources */,
 				EC3ED0742D906E44002775FD /* NetworkClientAsync.swift in Sources */,
 				EC47DE642D84A8750085B014 /* MainCoordinator.swift in Sources */,
-				EC3ED0D22D91764A002775FD /* Float+Extensions.swift in Sources */,
 				EC3ED07C2D90D088002775FD /* Movie.swift in Sources */,
 				EC3ED07A2D90BA8A002775FD /* MoviesLoader.swift in Sources */,
 				AD77F5742857F8810062FB14 /* Date+Extensions.swift in Sources */,

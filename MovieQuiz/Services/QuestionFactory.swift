@@ -64,13 +64,13 @@ final class QuestionFactory: QuestionFactoryProtocol {
     
     private func createQuestion(for movie: Movie) -> (question: String, correctAnswer: Bool) {
         let rating = Float(movie.rating) ?? 0
-        let lowerRating: Int = rating.isWhole ? Int(rating - 1) : Int(floor(rating))
-        let upperRating: Int = Int(ceil(rating))
-        let questionRating = Bool.random() ? lowerRating : upperRating
+        let lowerRating = rating.rounded(.down) - (1 - rating.truncatingRemainder(dividingBy: 1).rounded(.up))
+        let upperRating = rating.rounded(.up)
+        let questionRating = min(Bool.random() ? lowerRating : upperRating, 9.0)
         let questionType: QuestionType = Bool.random() ? .greaterThan : .lowerThan
-        let correctAnswer: Bool = questionType == .greaterThan ? Float(questionRating) < rating : Float(questionRating) > rating
+        let correctAnswer: Bool = questionType == .greaterThan ? questionRating < rating : questionRating > rating
         print("Movie rating: \(rating)")
-        return ("Рейтинг этого фильма \(questionType.rawValue) чем \(questionRating)?", correctAnswer)
+        return ("Рейтинг этого фильма \(questionType.rawValue) чем \(Int(questionRating))?", correctAnswer)
     }
     
     private func randomIndex() -> Int? {

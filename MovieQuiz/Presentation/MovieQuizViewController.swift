@@ -42,7 +42,7 @@ final class MovieQuizViewController: UIViewController, Coordinating {
     private let questionNumberLabel = UILabel()
     private let questionTitleLabel = UILabel()
     private let imageView = MoviePosterView(frame: .zero)
-    private let menuButton = UIButton(type: .system)
+//    private let menuButton = UIButton(type: .system)
     
     private let activityIndicatorView: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .large)
@@ -231,7 +231,7 @@ extension MovieQuizViewController: VoiceCommandRecognizerDelegate {
 extension MovieQuizViewController {
     private func setupUI() {
         setupUIElements()
-        setupMenu()
+//        setupMenu()
     }
     
     private func setupUIElements() {
@@ -244,10 +244,11 @@ extension MovieQuizViewController {
         questionNumberLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
         questionNumberLabel.textColor = .ypWhite
         
-        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        menuButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+//        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+//        menuButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         
-        let titleStackView = UIStackView(arrangedSubviews: [questionTitleLabel, questionNumberLabel, menuButton])
+//        let titleStackView = UIStackView(arrangedSubviews: [questionTitleLabel, questionNumberLabel, menuButton])
+        let titleStackView = UIStackView(arrangedSubviews: [questionTitleLabel, questionNumberLabel])  //<---- replace with above
         titleStackView.axis = .horizontal
         titleStackView.distribution = .fill
         titleStackView.spacing = 5
@@ -299,13 +300,13 @@ extension MovieQuizViewController {
         imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 3/2).isActive = true
     }
     
-    private func setupMenu() {
-        let menu = UIMenu(children: [
-            UIAction(title: "Остановите, надо выйти", image: UIImage(systemName: "house")) { [weak self] _ in
-                self?.coordinator?.navigateBack()
-            }
-        ])
-        menuButton.menu = menu
-        menuButton.showsMenuAsPrimaryAction = true
-    }
+//    private func setupMenu() {
+//        let menu = UIMenu(children: [
+//            UIAction(title: "Остановите, надо выйти", image: UIImage(systemName: "house")) { [weak self] _ in
+//                self?.coordinator?.navigateBack()
+//            }
+//        ])
+//        menuButton.menu = menu
+//        menuButton.showsMenuAsPrimaryAction = true
+//    }
 }
