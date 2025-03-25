@@ -2,63 +2,102 @@ import Foundation
 
 final class QuestionFactory: QuestionFactoryProtocol {
     
-    private let questions: [QuizQuestion] = [
-            QuizQuestion(
-                image: "The Godfather",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: true),
-            QuizQuestion(
-                image: "The Dark Knight",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: true),
-            QuizQuestion(
-                image: "Kill Bill",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: true),
-            QuizQuestion(
-                image: "The Avengers",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: true),
-            QuizQuestion(
-                image: "Deadpool",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: true),
-            QuizQuestion(
-                image: "The Green Knight",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: true),
-            QuizQuestion(
-                image: "Old",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: false),
-            QuizQuestion(
-                image: "The Ice Age Adventures of Buck Wild",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: false),
-            QuizQuestion(
-                image: "Tesla",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: false),
-            QuizQuestion(
-                image: "Vivarium",
-                text: "Рейтинг этого фильма больше чем 6?",
-                correctAnswer: false)
-        ]
+    private let moviesLoader: MoviesLoading
+    private let questionsAmount: Int?
+    
+    private enum QuestionType: String {
+        case greaterThan = "больше"
+        case lowerThan = "меньше"
+    }
     
     private weak var delegate: QuestionFactoryDelegate?
     
-    init(delegate: QuestionFactoryDelegate?) {
+    private var movies: [Movie] = []
+    private var uniqueIndexes: Set<Int> = []
+    
+    init(moviesLoader: MoviesLoading, questionsAmount: Int? = nil, delegate: QuestionFactoryDelegate?) {
+        self.moviesLoader = moviesLoader
+        self.questionsAmount = questionsAmount
         self.delegate = delegate
     }
     
-    func requestNextQuestion() {
-        guard let index = (0..<questions.count).randomElement() else {
-            delegate?.didReceiveNextQuestion(question: nil)
-            return
+    func loadData() {
+        moviesLoader.loadMovies { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                switch result {
+                case .success(let movies):
+                    self.movies = movies.items
+                    self.delegate?.didLoadDataFromServer()
+                case .failure(let error):
+                    self.delegate?.didFailToLoadData(with: error)
+                }
+            }
         }
-
-        let question = questions[safe: index]
-        delegate?.didReceiveNextQuestion(question: question)
     }
     
+    func requestNextQuestion() {
+        guard
+            let indexToTake = getIndex(),
+            let movie = movies[safe: indexToTake]
+        else { return }
+        
+        Task { [weak self] in
+            guard let self else { return }
+            
+            var imageData = Data()
+            do {
+                imageData = try Data(contentsOf: movie.resizedImageURL)
+            } catch {
+                print("Failed to load image")
+            }
+            
+            let (questionText, correctAnswer) = self.createQuestion(for: movie)
+            let question = QuizQuestion(movieTitle: movie.title, image: imageData, text: questionText, correctAnswer: correctAnswer)
+            
+            await MainActor.run { [weak self] in
+                guard let self else { return }
+                self.delegate?.didReceiveNextQuestion(question: question)
+            }
+        }
+    }
+    
+    private func createQuestion(for movie: Movie) -> (question: String, correctAnswer: Bool) {
+        let rating = Float(movie.rating) ?? 0
+        let lowerRating: Int = rating.isWhole ? Int(rating - 1) : Int(floor(rating))
+        let upperRating: Int = Int(ceil(rating))
+        let questionRating = Bool.random() ? lowerRating : upperRating
+        let questionType: QuestionType = Bool.random() ? .greaterThan : .lowerThan
+        let correctAnswer: Bool = questionType == .greaterThan ? Float(questionRating) < rating : Float(questionRating) > rating
+        print("Movie rating: \(rating)")
+        return ("Рейтинг этого фильма \(questionType.rawValue) чем \(questionRating)?", correctAnswer)
+    }
+    
+    private func randomIndex() -> Int? {
+        return (0..<movies.count).randomElement()
+    }
+    
+    private func generateUniqueIndices(count: Int) -> Set<Int> {
+        var indices: Set<Int> = []
+        
+        while indices.count < count {
+            if let randomIndex = randomIndex() {
+                indices.insert(randomIndex)
+            }
+        }
+        return indices
+    }
+    
+    private func getIndex() -> Int? {
+        var indexToTake: Int?
+        if let questionsAmount, movies.count > questionsAmount {
+            if uniqueIndexes.isEmpty {
+                uniqueIndexes = generateUniqueIndices(count: questionsAmount)
+            }
+            indexToTake = uniqueIndexes.removeFirst()
+        } else {
+            indexToTake = randomIndex()
+        }
+        return indexToTake
+    }
 }

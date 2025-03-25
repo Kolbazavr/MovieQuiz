@@ -9,12 +9,14 @@ final class MovieQuizViewController: UIViewController, Coordinating {
         self.statisticService = StatisticService()
         
         self.questionsAmount = userSettings?.questionsCount ?? 10
+        let loader = userSettings?.loaderType ?? .escaping
                                              
         super.init(nibName: nil, bundle: nil)
         
-        self.questionFactory = QuestionFactory(delegate: self)
+        self.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(loader: loader), questionsAmount: questionsAmount, delegate: self)
         self.alertPresenter = AlertPresenter(delegate: self)
         self.commandRecognizer = (userSettings?.voiceControlEnabled ?? false) ? SpeechRecognizer(delegate: self) : nil
+        self.loadQuizData()
     }
     
     required init?(coder: NSCoder) {
@@ -28,8 +30,8 @@ final class MovieQuizViewController: UIViewController, Coordinating {
     
     private var commandRecognizer: SpeechRecognizer?
     
-    private var currentQuestionNumber = 0
-    private var correctAnswers = 0
+    private var currentQuestionNumber: Int = .zero
+    private var correctAnswers: Int = .zero
     private var currentQuestion: QuizQuestion?
     
     private let questionsAmount: Int
@@ -39,17 +41,23 @@ final class MovieQuizViewController: UIViewController, Coordinating {
     private let questionTextLabel = UILabel()
     private let questionNumberLabel = UILabel()
     private let questionTitleLabel = UILabel()
-    private let imageView = UIImageView()
+    private let imageView = MoviePosterView(frame: .zero)
     private let menuButton = UIButton(type: .system)
+    
+    private let activityIndicatorView: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(style: .large)
+        view.hidesWhenStopped = true
+        return view
+    }()
     
     private enum QuestionState {
         case correct, incorrect, noAnswer
         
-        var color: CGColor {
+        var color: CGColor? {
             return switch self {
             case .correct: UIColor.ypGreen.cgColor
             case .incorrect: UIColor.ypRed.cgColor
-            case .noAnswer: UIColor.clear.cgColor
+            case .noAnswer: nil
             }
         }
     }
@@ -57,17 +65,16 @@ final class MovieQuizViewController: UIViewController, Coordinating {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        loadQuestion()
     }
 
     private func updateUI(with viewModel: QuizStepViewModel) {
-        imageView.image = viewModel.image
+        imageView.showSomething(movieTitle: viewModel.movieTitle, movieImage: viewModel.image)
         questionTextLabel.text = viewModel.question
         questionNumberLabel.text = viewModel.questionNumber
     }
     
     private func updateBorder(for state: QuestionState) {
-        imageView.layer.borderColor = state.color
+        imageView.setBorderColor(state.color)
     }
     
     private func showAnswerResult(isCorrect: Bool) {
@@ -86,7 +93,13 @@ final class MovieQuizViewController: UIViewController, Coordinating {
     }
     
     private func loadQuestion() {
+        showLoadingIndicator()
         questionFactory?.requestNextQuestion()
+        updateBorder(for: .noAnswer)
+    }
+    
+    private func loadQuizData() {
+        questionFactory?.loadData()
     }
     
     private func showResults() {
@@ -110,7 +123,6 @@ final class MovieQuizViewController: UIViewController, Coordinating {
             buttons: [button]
         )
         alertPresenter?.makeAlert(for: resultsModel)
-        
     }
     
     private func resetQuiz() {
@@ -128,7 +140,6 @@ final class MovieQuizViewController: UIViewController, Coordinating {
         UIView.animate(withDuration: 0.4) {
             button.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
         }
-        
         UIView.animate(withDuration: 0.2, delay: 0.2, options: .curveEaseIn) {
             button.transform = .identity
         }
@@ -144,6 +155,28 @@ final class MovieQuizViewController: UIViewController, Coordinating {
         showAnswerResult(isCorrect: buttonTypePressed == currentQuestion.correctAnswer)
     }
     
+    private func showLoadingIndicator() {
+        activityIndicatorView.startAnimating()
+    }
+    
+    private func hideLoadingIndicator() {
+        activityIndicatorView.stopAnimating()
+    }
+    
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        let button1 = AlertButtonModel(buttonText: "Попробовать еще раз") { [weak self] in
+            guard let self else { return }
+            self.resetQuiz()
+            self.loadQuizData()
+        }
+        let button2 = AlertButtonModel(buttonText: "Ну и ладно") { [weak self] in
+            self?.coordinator?.navigateBack()
+        }
+        let networkErrorModel = AlertModel(title: "Ошибка", message: message, buttons: [button1, button2])
+        alertPresenter?.makeAlert(for: networkErrorModel)
+    }
+    
     @objc private func noButtonPressed(_ sender: Any) {
         evaluateAnswer(buttonTypePressed: false)
     }
@@ -157,6 +190,7 @@ final class MovieQuizViewController: UIViewController, Coordinating {
 extension MovieQuizViewController: QuestionFactoryDelegate {
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question else { return }
+        hideLoadingIndicator()
         currentQuestionNumber += 1
         currentQuestion = question
         let viewModel = QuizStepViewModel(quizQuestion: question, number: currentQuestionNumber, of: questionsAmount)
@@ -164,11 +198,18 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
         DispatchQueue.main.async { [weak self] in
             
             self?.updateUI(with: viewModel)
-            self?.updateBorder(for: .noAnswer)
             self?.changeStateButton(isEnabled: true)
             
             self?.changeVoiceState(isEnabled: true)
         }
+    }
+    
+    func didLoadDataFromServer() {
+        loadQuestion()
+    }
+
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription)
     }
 }
 
@@ -224,9 +265,7 @@ extension MovieQuizViewController {
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 20
         imageView.layer.masksToBounds = true
-        imageView.layer.borderColor = UIColor.clear.cgColor
-        imageView.layer.borderWidth = 8
-        imageView.backgroundColor = .gray
+        imageView.backgroundColor = .clear
         
         questionTextLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
         questionTextLabel.textColor = .ypWhite
@@ -241,6 +280,9 @@ extension MovieQuizViewController {
         mainStackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainStackView)
         
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicatorView)
+        
         NSLayoutConstraint.activate([
             buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
             
@@ -248,21 +290,22 @@ extension MovieQuizViewController {
             mainStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             mainStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             mainStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
+            
+            activityIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
         ])
-
+        
         imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 3/2).isActive = true
     }
     
     private func setupMenu() {
         let menu = UIMenu(children: [
-            UIAction(title: "Сереже надо выйти", image: UIImage(systemName: "house")) { [weak self] _ in
+            UIAction(title: "Остановите, надо выйти", image: UIImage(systemName: "house")) { [weak self] _ in
                 self?.coordinator?.navigateBack()
             }
         ])
         menuButton.menu = menu
         menuButton.showsMenuAsPrimaryAction = true
     }
-    
-    
-    
 }
