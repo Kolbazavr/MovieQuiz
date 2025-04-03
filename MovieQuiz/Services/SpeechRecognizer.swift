@@ -69,8 +69,8 @@ actor SpeechRecognizer {
     }
     
     @MainActor func sendCommand(_ command: Bool) {
-        Task {
-            await self.delegate?.commandRecognized(command)
+        Task { [weak self] in
+            await self?.delegate?.commandRecognized(command)
         }
     }
     
@@ -146,6 +146,7 @@ actor SpeechRecognizer {
         
         //This "final" shit is not working (count segments maybe or set timer to detect pause)
         //DispatchQueue 1-2 sec to compare new result to old result? If == then speech stopped?
+        //Test English next time - will it be "final" at any point...
         if receivedFinalResult || receivedError {
             audioEngine.stop()
             audioEngine.inputNode.removeTap(onBus: 0)
@@ -159,7 +160,7 @@ actor SpeechRecognizer {
     nonisolated private func transcribe(_ message: String) {
         Task { @MainActor in
             transcript = message
-            print("Recognized text: \(transcript)")
+            print("Мне послышалось: \(transcript)")
             checkResult()
         }
     }
