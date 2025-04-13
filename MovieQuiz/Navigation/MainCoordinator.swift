@@ -22,7 +22,7 @@ final class MainCoordinator: Coordinator {
         
         var viewController: UIViewController & Coordinating {
             return switch self {
-            case .game: MovieQuizViewController()
+            case .game: QuizViewController()
             case .settings: SettingsViewController()
             case .highScore: HighScoresViewController()
             }

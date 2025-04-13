@@ -5,9 +5,9 @@ final class NetworkClientCombine: NetworkClientProtocol {
     
     private var cancellables = Set<AnyCancellable>()
     
-    func fetchData(url: URL, handler: @escaping (Result<Data, any Error>) -> Void) {
+    func fetchData(url: URL, timeOut: TimeInterval? = nil, handler: @escaping (Result<Data, any Error>) -> Void) {
         print("Loading with combine")
-        fetch(url: url)
+        fetch(url: url, timeOut: timeOut)
             .sink(receiveCompletion: { completionStatus in
                 switch completionStatus {
                 case .finished:
@@ -23,8 +23,10 @@ final class NetworkClientCombine: NetworkClientProtocol {
     }
     
     
-    private func fetch(url: URL) -> AnyPublisher<Data, Error> {
-        return URLSession.shared.dataTaskPublisher(for: url)
+    private func fetch(url: URL, timeOut: TimeInterval? = nil) -> AnyPublisher<Data, Error> {
+        var request = URLRequest(url: url)
+        request.timeoutInterval = timeOut ?? 10
+        return URLSession.shared.dataTaskPublisher(for: request)
             .tryMap() { element -> Data in
                 guard let httpResponse = element.response as? HTTPURLResponse,
                       200..<300 ~= httpResponse.statusCode else {

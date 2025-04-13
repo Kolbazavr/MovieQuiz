@@ -88,7 +88,7 @@ final class SettingsViewController: UIViewController, AlertPresenterDelegate, Co
         alertPresenter?.makeAlert(for: resultsModel)
     }
     
-    func showAlert(alert: UIAlertController) {
+    func presentAlert(alert: UIAlertController) {
         present(alert, animated: true)
     }
     

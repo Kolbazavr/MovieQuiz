@@ -1,5 +1,5 @@
 import Foundation
 
 protocol NetworkClientProtocol {
-    func fetchData(url: URL, handler: @escaping (Result<Data, Error>) -> Void)
+    func fetchData(url: URL, timeOut: TimeInterval?, handler: @escaping (Result<Data, Error>) -> Void)
 }

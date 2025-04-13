@@ -42,22 +42,23 @@ final class QuestionFactory: QuestionFactoryProtocol {
             let movie = movies[safe: indexToTake]
         else { return }
         
-        Task { [weak self] in
-            guard let self else { return }
-            
-            var imageData = Data()
-            do {
-                imageData = try Data(contentsOf: movie.resizedImageURL)
-            } catch {
-                print("Failed to load image")
-            }
-            
-            let (questionText, correctAnswer) = self.createQuestion(for: movie)
-            let question = QuizQuestion(movieTitle: movie.title, image: imageData, text: questionText, correctAnswer: correctAnswer)
-            
-            await MainActor.run { [weak self] in
+        moviesLoader.loadPoster(url: movie.resizedImageURL) { [weak self] result in
+            Task {
                 guard let self else { return }
-                self.delegate?.didReceiveNextQuestion(question: question)
+                var imageData: Data?
+                switch result {
+                case .success(let data):
+                    imageData = data
+                case .failure:
+                    print("Failed to load image data, so title will be used as question")
+                }
+                let (questionText, correctAnswer) = self.createQuestion(for: movie)
+                let question = QuizQuestion(movieTitle: movie.title, image: imageData, text: questionText, correctAnswer: correctAnswer)
+                
+                await MainActor.run { [weak self] in
+                    guard let self else { return }
+                    self.delegate?.didReceiveNextQuestion(question: question)
+                }
             }
         }
     }
@@ -69,7 +70,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
         let questionRating = min(Bool.random() ? lowerRating : upperRating, 9.0)
         let questionType: QuestionType = Bool.random() ? .greaterThan : .lowerThan
         let correctAnswer: Bool = questionType == .greaterThan ? questionRating < rating : questionRating > rating
-        print("Movie rating: \(rating)")
+        
         return ("Рейтинг этого фильма \(questionType.rawValue) чем \(Int(questionRating))?", correctAnswer)
     }
     

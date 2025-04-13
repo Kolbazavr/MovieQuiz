@@ -54,6 +54,7 @@ extension MainMenuViewController {
         view.addSubview(footNoteLabel)
         
         newGameButton.configure(title: "Новая игра")
+        newGameButton.accessibilityIdentifier = "NewGameButton"
         newGameButton.setImage(UIImage(systemName: "arcade.stick"), for: .normal)
         newGameButton.addTarget(self, action: #selector(newGameButtonTapped), for: .touchUpInside)
         

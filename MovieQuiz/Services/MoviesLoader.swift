@@ -2,9 +2,16 @@ import Foundation
 
 struct MoviesLoader: MoviesLoading {
     private let networkClientManger: NetworkClientManager
+    private let imageLoadingTimeout: TimeInterval
     
-    init(loader: LoaderType) {
+    init(loader: LoaderType, imageLoadingTimeout: TimeInterval = 3) {
         self.networkClientManger = NetworkClientManager(networkClientType: loader)
+        self.imageLoadingTimeout = imageLoadingTimeout
+    }
+    
+    init(networkClientManger: NetworkClientManager, imageLoadingTimeout: TimeInterval = 3) {
+        self.networkClientManger = networkClientManger
+        self.imageLoadingTimeout = imageLoadingTimeout
     }
     
     private enum EmptyDataError: Error, LocalizedError {
@@ -26,7 +33,7 @@ struct MoviesLoader: MoviesLoading {
     }
     
     func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void) {
-        networkClientManger.fetchMoviesData(url: mostPopularMoviesUrl) { result in
+        networkClientManger.fetchData(url: mostPopularMoviesUrl) { result in
             switch result {
             case .success(let moviesData):
                 do {
@@ -39,6 +46,17 @@ struct MoviesLoader: MoviesLoading {
                 } catch {
                     handler(.failure(error))
                 }
+            case .failure(let error):
+                handler(.failure(error))
+            }
+        }
+    }
+    
+    func loadPoster(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
+        networkClientManger.fetchData(url: url, timeOut: imageLoadingTimeout) { result in
+            switch result {
+            case .success(let data):
+                handler(.success(data))
             case .failure(let error):
                 handler(.failure(error))
             }
