@@ -1,5 +1,11 @@
 import Foundation
 
+enum LoaderType: String, CaseIterable {
+    case escaping = "Escaping"
+    case combine = "Combine"
+    case async = "Async"
+}
+
 final class NetworkClientManager {
     
     let networkClient: NetworkClientProtocol
@@ -25,7 +31,11 @@ final class NetworkClientManager {
         }
     }
     
-    func fetchMoviesData(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
-        networkClient.fetchData(url: url, handler: handler)
+    init(networkClient: NetworkClientProtocol) {
+        self.networkClient = networkClient
+    }
+    
+    func fetchData(url: URL, timeOut: TimeInterval? = nil, handler: @escaping (Result<Data, Error>) -> Void) {
+        networkClient.fetchData(url: url, timeOut: timeOut, handler: handler)
     }
 }

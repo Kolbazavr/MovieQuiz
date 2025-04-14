@@ -11,26 +11,27 @@ final class MoviePosterView: UIImageView {
         } else {
             let placeholderLabel = UILabel(frame: self.bounds)
             placeholderLabel.numberOfLines = 0
-            placeholderLabel.text = "Я хз, что с картинкой,\n но вот тебе тайтл:\n >>\(movieTitle)<<,\n угадывай так..."
+            placeholderLabel.text = "Я хз, что с картинкой,\n но вот тебе тайтл:\n >>\(movieTitle)<<\n угадывай так..."
             placeholderLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
             placeholderLabel.textAlignment = .center
-            placeholderLabel.textColor = .ypBlack
-            self.backgroundColor = .ypWhite
+            placeholderLabel.textColor = .ypWhite
+            self.backgroundColor = .ypBlack
             self.addSubview(placeholderLabel)
             self.image = nil
         }
     }
     
-    func setBorderColor(_ color: CGColor?) {
-        if let color {
-            UIView.animate(withDuration: 0.3) {
-                self.layer.borderColor = color
-                self.layer.borderWidth = 8
-            }
-        } else {
-            self.layer.borderColor = UIColor.clear.cgColor
-            layer.borderWidth = 0
-        } 
+    func setBorderColor(for isCorrect: Bool) {
+        let color = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        UIView.animate(withDuration: 0.3) {
+            self.layer.borderColor = color
+            self.layer.borderWidth = 8
+        }
+    }
+    
+    func resetBorderColor() {
+        self.layer.borderColor = UIColor.clear.cgColor
+        self.layer.borderWidth = 0
     }
     
     private func removeText() {

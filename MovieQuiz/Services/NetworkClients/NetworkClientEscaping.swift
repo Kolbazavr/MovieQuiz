@@ -6,9 +6,10 @@ struct NetworkClientEscaping: NetworkClientProtocol {
         case codeError
     }
     
-    func fetchData(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
-        print("Loading with escaping")
-        URLSession.shared.dataTask(with: url) { data, response, error in
+    func fetchData(url: URL, timeOut: TimeInterval? = nil, handler: @escaping (Result<Data, Error>) -> Void) {
+        var request = URLRequest(url: url)
+        request.timeoutInterval = timeOut ?? 10
+        URLSession.shared.dataTask(with: request) { data, response, error in
             guard
                 let data = data,
                 let response = response as? HTTPURLResponse,

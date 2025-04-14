@@ -1,5 +1,5 @@
 import UIKit
 
 protocol AlertPresenterDelegate: AnyObject {
-    func showAlert(alert: UIAlertController)
+    func presentAlert(alert: UIAlertController)
 }
