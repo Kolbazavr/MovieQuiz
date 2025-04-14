@@ -1,10 +1,3 @@
-//
-//  MainMenuViewController.swift
-//  UIKitNavigationTest
-//
-//  Created by ANTON ZVERKOV on 10.03.2025.
-//
-
 import UIKit
 import AVFoundation // REMOVE!!!
 

@@ -1,10 +1,3 @@
-//
-//  UserSettings.swift
-//  UIKitNavigationTest
-//
-//  Created by ANTON ZVERKOV on 12.03.2025.
-//
-
 import Foundation
 
 final class UserSettings {

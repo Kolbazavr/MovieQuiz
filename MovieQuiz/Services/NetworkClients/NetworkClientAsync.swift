@@ -7,7 +7,6 @@ struct NetworkClientAsync: NetworkClientProtocol {
     }
     
     func fetchData(url: URL, timeOut: TimeInterval? = nil, handler: @escaping (Result<Data, any Error>) -> Void) {
-        print("Loading with async")
         Task {
             do {
                 handler(.success(try await fetch(url: url, timeOut: timeOut)))

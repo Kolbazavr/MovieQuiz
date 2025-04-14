@@ -1,10 +1,3 @@
-//
-//  SettingsViewController.swift
-//  UIKitNavigationTest
-//
-//  Created by ANTON ZVERKOV on 11.03.2025.
-//
-
 import UIKit
 
 final class SettingsViewController: UIViewController, AlertPresenterDelegate, Coordinating {
